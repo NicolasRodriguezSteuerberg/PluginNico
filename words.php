@@ -45,10 +45,10 @@ $nonOffensiveWordsList = [
  * @return string
 
 function renym_wordpress_typo_fix( $text ) {
-    global $offensiveWordsList, $nonOffensiveWordsList;
-    return str_replace( $offensiveWordsList, $nonOffensiveWordsList, $text );
+global $offensiveWordsList, $nonOffensiveWordsList;
+return str_replace( $offensiveWordsList, $nonOffensiveWordsList, $text );
 }
-*/
+ */
 
 /**
  * Whenever the word WordPress appears in the content
@@ -62,10 +62,10 @@ function renym_wordpress_typo_fix($text){
     // take the words from the table
     $words = selectData();
     foreach ($words as $result){
-        $offensiveWords[] = $result->offensiveWords; // -> para seleccionar que columna escoger
-        $nonOffensiveWords[] = $result->nonOffensiveWord;
+        $offensiveWordsList[] = $result->offensiveWords; // -> para seleccionar que columna escoger
+        $nonOffensiveWordsList[] = $result->nonOffensiveWords;
     }
-    return str_replace($offensiveWords, $nonOffensiveWords, $text);
+    return str_replace($offensiveWordsList, $nonOffensiveWordsList, $text);
 }
 
 
@@ -86,46 +86,42 @@ function nico_words_get_lyric() {
  */
 function createTable(){
     global $wpdb; // this is how you get access to the database
-    $table_name = $wpdb->prefix . 'nicoWords';
-
+    $table_name = $wpdb->prefix . "nicoWords";
+    //Charset de la tabla
     $charset_collate = $wpdb->get_charset_collate();
-    // SQL sentence
+    //Sentencia SQL
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
-        offesinveWord varchar(255) NOT NULL,
-        nonOffensiveWord varchar(255) NOT NULL,
-        PRIMARY KEY (id)
+        offensiveWords varchar(255) NOT NULL,
+        nonOffensiveWords varchar(255) NOT NULL,
+        PRIMARY KEY  (id)
     ) $charset_collate;";
-    // including the file to use dbDelta
+    //Incluir el fichero para poder ejecutar dbDelta
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-    // executing the SQL sentence
     dbDelta( $sql );
 }
 // when the plugin is activated, we create the table
-add_action( 'plugins_loaded', 'createTable' );
+add_action("plugins_loaded", "createTable");
 
 // now we insert the words into the table
 function insertData(){
     global $wpdb, $offensiveWordsList, $nonOffensiveWordsList;
-    $table_name = $wpdb->prefix . 'nicoWords';
-    // we see if the table is empty
-    $hasSomething = $wpdb->get_results( "SELECT * FROM $table_name" );
-    if ( count($hasSomething) == 0 ) {
-        // if it is empty, we insert the words
-        for ($i = 0; $i < count($offensiveWordsList); $i++) {
+    $table_name = $wpdb->prefix . "nicoWords";
+    $flag = $wpdb->get_results("SELECT * FROM $table_name");
+    if (count($flag)==0){
+        for ($i = 0; $i < count($offensiveWordsList); $i++){
             $wpdb->insert(
                 $table_name,
                 array(
-                    'offesinveWord' => $offensiveWordsList[$i],
-                    'nonOffensiveWord' => $nonOffensiveWordsList[$i]
+                    'offensiveWords' => $offensiveWordsList[$i],
+                    'nonOffensiveWords' => $nonOffensiveWordsList[$i]
                 )
             );
         }
     }
 }
-
 // when the plugin is activated, we insert the words
-add_action( 'plugins_loaded', 'insertData' );
+add_action("plugins_loaded", "insertData");
 
 // selecting the words from the database
 function selectData(){
