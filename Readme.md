@@ -1,4 +1,4 @@
-# Nico Words Plugin de WordPress
+# Nico Words Plugin de WordPress y forc de MarcosFa
 
 ## Descripcion
 El plugin de WordPress Nico Words es una herramienta simple de filtrado de contenido diseñada para el curso de desarrollo de plugins de WordPress. Reemplaza palabras ofensivas con alternativas no ofensivas en el contenido de entradas y páginas.
